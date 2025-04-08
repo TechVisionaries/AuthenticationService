@@ -1,0 +1,2 @@
+# AuthenticationService
+MediSync authentication service
