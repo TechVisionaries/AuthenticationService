@@ -20,8 +20,9 @@ public class JwtUtil {
     @Value("${spring.application.secretKey}")
     private String secret;
 
-    public String generateToken(String email) {
+    public String generateToken(String email, String role) {
         Map<String,Object> claims=new HashMap<>();
+        claims.put("role", role);
         return createToken(claims,email);
     }
 
@@ -42,6 +43,11 @@ public class JwtUtil {
 
     public String extractEmail(String token) {
         return extractClaim(token, Claims::getSubject);
+    }
+
+    public String extractRole(String token){
+        System.out.println( extractAllClaims(token).get("role", String.class));
+        return  extractAllClaims(token).get("role", String.class);
     }
 
     public Date extractExpiration(String token) {
@@ -66,8 +72,9 @@ public class JwtUtil {
 //        return extractExpiration(token).before(new Date());
 //    }
 
-    public Boolean isTokenValid(String token, String email) {
+    public Boolean isTokenValid(String token, String email, String role) {
         final String userEmail = extractEmail(token);
-        return (userEmail.equals(email));
+        final String userRole = extractRole(token);
+        return (userEmail.equals(email) &&  userRole.equals(role));
     }
 }
