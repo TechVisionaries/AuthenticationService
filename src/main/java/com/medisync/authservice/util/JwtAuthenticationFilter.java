@@ -43,6 +43,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             logger.info(authHeader);
             String email = null;
             String jwt = null;
+            String role = null;
 
             // Extract JWT token from Authorization header
             if (authHeader != null && authHeader.startsWith("Bearer ")) {
@@ -50,10 +51,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 // Extract email from JWT token
                 try{
                     email = jwtUtil.extractEmail(jwt);
+                    role = jwtUtil.extractRole(jwt);
                     // Check if email is not null and there is no existing authentication
                     if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                         // Validate the JWT token
-                        if (jwtUtil.isTokenValid(jwt, email)) {
+                        if (jwtUtil.isTokenValid(jwt, email, role)) {
                             UsernamePasswordAuthenticationToken authToken =
                                     new UsernamePasswordAuthenticationToken(email, null, new ArrayList<>());
                             authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

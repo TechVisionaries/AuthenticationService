@@ -69,7 +69,7 @@ public class UserServiceImpl implements UserService {
 
             // Check if authentication was successful
             if (passwordEncoder.matches(loginDTO.getPassword(), user.getPassword())) {
-                String token = jwtUtil.generateToken(user.getEmail());
+                String token = jwtUtil.generateToken(user.getEmail(), user.getRole());
                 TokenContentDTO content = new TokenContentDTO(token);
                 log.info("User logging successful and content : {}", content);
 
