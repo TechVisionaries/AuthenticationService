@@ -27,13 +27,15 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         cache: maven
+    
     - name: Build and analyze with SonarCloud
-      run: mvn clean verify sonar:sonar -DskipTests \
-            -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} \
-            -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }} \
-            -Dsonar.host.url=https://sonarcloud.io \
-            -Dsonar.login=b533d0528ef5934b4d1b2e08da708a5818f58cc2
-
+      run: |
+        mvn clean verify sonar:sonar \
+          -DskipTests=true \
+          -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} \
+          -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }} \
+          -Dsonar.host.url=https://sonarcloud.io \
+          -Dsonar.login=${{ secrets.SONAR_TOKEN }}
     # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
     - name: Update dependency graph
       uses: advanced-security/maven-dependency-submission-action@571e99aab1055c2e71a1e2309b9691de18d6b7d6
