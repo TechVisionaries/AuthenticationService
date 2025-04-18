@@ -5,6 +5,7 @@ import com.medisync.authservice.dto.LoginDTO;
 import com.medisync.authservice.dto.UserDTO;
 import jakarta.servlet.http.HttpServletResponse;
 
+//userService interface
 public interface UserService {
     ApiResponseDTO registerUser(UserDTO userDTO);
 
