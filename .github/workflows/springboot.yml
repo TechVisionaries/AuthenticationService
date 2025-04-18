@@ -28,6 +28,12 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
+      - name: Debug Secrets (except token!)
+        run: |
+          echo "SONAR_Token: ${{ secrets.SONAR_TOKEN }}"
+          echo "SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}"
+          echo "SONAR_ORGANIZATION: ${{ secrets.SONAR_ORGANIZATION }}"
+
       - name: Build and analyze with SonarCloud
         run: |
           mvn clean verify sonar:sonar \
