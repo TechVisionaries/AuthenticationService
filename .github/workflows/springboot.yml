@@ -33,7 +33,7 @@ jobs:
     - name: SonarCloud Scan
       uses: SonarSource/sonarcloud-github-action@v1
       env:
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        SONAR_TOKEN: b533d0528ef5934b4d1b2e08da708a5818f58cc2
         SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
         SONAR_ORGANIZATION: ${{ secrets.SONAR_ORGANIZATION }}
       with:
