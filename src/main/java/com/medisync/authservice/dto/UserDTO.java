@@ -2,6 +2,7 @@ package com.medisync.authservice.dto;
 
 import lombok.Data;
 
+//User DTO
 @Data
 public class UserDTO {
 
