@@ -70,3 +70,19 @@ jobs:
             -Dsonar.host.url=https://sonarcloud.io \
             -Dsonar.login=${{ secrets.SONAR_TOKEN }}
         
+      - name: Update PR/Commit Status
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const sha = github.event_name === 'pull_request' 
+              ? '${{ github.event.pull_request.head.sha }}' 
+              : '${{ github.sha }}';
+            
+            await github.rest.checks.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: 'SonarCloud Analysis',
+              head_sha: sha,
+              status: 'completed',
+              conclusion: '${{ job.status }}'
+            })
