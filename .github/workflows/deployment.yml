@@ -35,9 +35,9 @@ jobs:
 
       - name: Debug Secrets (except token!)
         run: |
-          echo "SONAR_Token: ${{ secrets.SONAR_TOKEN }}"
-          echo "SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}"
-          echo "SONAR_ORGANIZATION: ${{ secrets.SONAR_ORGANIZATION }}"
+          if [ -z "${{ secrets.SONAR_TOKEN }}" ]; then echo "SONAR_TOKEN is empty"; else echo "SONAR_TOKEN is set"; fi
+          if [ -z "${{ secrets.SONAR_PROJECT_KEY }}" ]; then echo "SONAR_PROJECT_KEY is empty"; else echo "SONAR_PROJECT_KEY is set"; fi
+          if [ -z "${{ secrets.SONAR_ORGANIZATION }}" ]; then echo "SONAR_ORGANIZATION is empty"; else echo "SONAR_ORGANIZATION is set"; fi
 
       - name: Build and analyze with SonarCloud
         run: |
@@ -46,7 +46,7 @@ jobs:
             -Dsonar.projectKey=TechVisionaries_AuthenticationService \
             -Dsonar.organization=techvisionaries \
             -Dsonar.host.url=https://sonarcloud.io \
-            -Dsonar.login : ${{ secrets.SONAR_TOKEN }}
+            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
 
       # - name: Update dependency graph
       #   uses: advanced-security/maven-dependency-submission-action@571e99aab1055c2e71a1e2309b9691de18d6b7d6
