@@ -1,0 +1,26 @@
+name: Docker Image CI
+
+on:
+ workflow_run:
+    workflows: ["Spring Boot CI"]
+    types:
+      - completed
+
+jobs:
+  docker:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and Push Docker Image
+        run: |
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/auth-microservice:latest .
+          docker push ${{ secrets.DOCKER_USERNAME }}/auth-microservice:latest
