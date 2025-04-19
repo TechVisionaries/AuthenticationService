@@ -58,7 +58,7 @@ jobs:
         uses: docker/login-action@v3
         with:
           username: osadhaog
-          password: dckr_pat_y97d91hywRGYaPhuG_n66Cr4ILY
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build and Push Docker Image
         run: |
