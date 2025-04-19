@@ -36,10 +36,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  checks: write
-  contents: read
-  pull-requests: write
-  id-token: write
+  pull-requests: read
 
 jobs:
   Analysis:
