@@ -35,7 +35,7 @@ jobs:
 
       - name: Debug Secrets (except token!)
         run: |
-          if [ -z "${{ secrets.SONAR_TOKEN }}" ]; then echo "SONAR_TOKEN is empty"; else echo "SONAR_TOKEN is set"; fi
+          if [ -z "${{ secrets.SONARTOKENNEW }}" ]; then echo "SONAR_TOKEN is empty"; else echo "SONAR_TOKEN is set"; fi
           if [ -z "${{ secrets.SONAR_PROJECT_KEY }}" ]; then echo "SONAR_PROJECT_KEY is empty"; else echo "SONAR_PROJECT_KEY is set"; fi
           if [ -z "${{ secrets.SONAR_ORGANIZATION }}" ]; then echo "SONAR_ORGANIZATION is empty"; else echo "SONAR_ORGANIZATION is set"; fi
 
