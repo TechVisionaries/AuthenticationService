@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-//user entity
+//User entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
