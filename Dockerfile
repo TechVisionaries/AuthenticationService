@@ -1,11 +1,14 @@
-# Use a lightweight official OpenJDK 17 image based on Alpine Linux
+# Use a base image with Java
 FROM openjdk:17-jdk-alpine
 
-# Create a writable mount point for temporary files (used by Spring Boot)
-VOLUME /tmp
+# Set the working directory
+WORKDIR /app
 
-# Copy the JAR file from the target directory into the image and name it app.jar
-COPY ${JAR_FILE} app.jar
+# Copy the jar file into the container
+COPY target/*.jar app.jar
 
-# Define the command to run the Spring Boot application using the JAR file
-ENTRYPOINT ["java","-jar","/app.jar"]
+# Expose the port your app runs on
+EXPOSE 8080
+
+# Command to run the jar
+ENTRYPOINT ["java", "-jar", "app.jar"]
