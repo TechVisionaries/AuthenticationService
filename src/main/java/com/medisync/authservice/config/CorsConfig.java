@@ -1,5 +1,5 @@
 package com.medisync.authservice.config;
 
-//cors config
+//cors configurations
 public class CorsConfig {
 }
