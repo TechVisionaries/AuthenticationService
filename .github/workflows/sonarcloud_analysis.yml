@@ -50,6 +50,7 @@ jobs:
           distribution: 'temurin'
 
       - name: Debug Secrets 
+        working-directory: ./backend
         run: |
           echo "Checking secrets..."
           if [ -z "${{secrets.SONAR_TOKEN}}" ]; then echo "SONAR_TOKEN is empty"; else echo "SONAR_TOKEN is set"; fi
