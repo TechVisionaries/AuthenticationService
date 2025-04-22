@@ -20,6 +20,9 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
+      - name: Grant execute permission to Maven Wrapper
+        run: chmod +x mvnw
+  
       - name: Build the app with Maven
         run: ./mvnw clean package -DskipTests
 
