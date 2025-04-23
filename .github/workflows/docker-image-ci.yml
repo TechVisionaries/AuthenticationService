@@ -43,5 +43,7 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: latest
         run: |
-          docker build -t $ECR_REGISTRY/auth-microservice:$IMAGE_TAG .
-          docker push $ECR_REGISTRY/auth-microservice:$IMAGE_TAG
+          docker build -t $ECR_REGISTRY/auth-microservice:latest -t $ECR_REGISTRY/auth-microservice:${{ github.sha }} .
+          docker push $ECR_REGISTRY/auth-microservice:latest
+          docker push $ECR_REGISTRY/auth-microservice:${{ github.sha }}
+
