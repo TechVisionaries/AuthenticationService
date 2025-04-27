@@ -11,6 +11,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 import static org.mockito.Mockito.*;
 
@@ -24,8 +27,11 @@ class JwtAuthenticationFilterTest {
     @InjectMocks private JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws Exception {
         SecurityContextHolder.clearContext();
+        StringWriter stringWriter = new StringWriter();
+        PrintWriter printWriter = new PrintWriter(stringWriter);
+        lenient().when(response.getWriter()).thenReturn(printWriter);
     }
 
     @Test
