@@ -8,7 +8,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 //user Controller
 @RestController
@@ -43,5 +47,43 @@ public class UserController {
             default -> HttpStatus.INTERNAL_SERVER_ERROR;
         };
         return new ResponseEntity<>(responseDTO, status);
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<ApiResponseDTO> getCurrentUser() {
+        // Get the email from the security context
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = (authentication != null) ? authentication.getName() : null;
+
+        if (email == null) {
+            return new ResponseEntity<>(
+                    new ApiResponseDTO("03", "Unauthorized", null),
+                    HttpStatus.FORBIDDEN
+            );
+        }
+
+        // Fetch user details from the database using the email
+        UserDTO userDTO = userService.findByEmail(email);
+        if (userDTO == null) {
+            return new ResponseEntity<>(
+                    new ApiResponseDTO("02", "User not found", null),
+                    HttpStatus.NOT_FOUND
+            );
+        }
+
+        return new ResponseEntity<>(
+                new ApiResponseDTO("00", "Success", userDTO),
+                HttpStatus.OK
+        );
+    }
+
+    @GetMapping("/all-users")
+    //@PreAuthorize("hasRole('ADMIN')") // Optional if handled in SecurityConfig
+    public ResponseEntity<ApiResponseDTO> getAllUsers() {
+        List<UserDTO> users = userService.getAllUsers();
+        return new ResponseEntity<>(
+                new ApiResponseDTO("00", "Success", users),
+                HttpStatus.OK
+        );
     }
 }

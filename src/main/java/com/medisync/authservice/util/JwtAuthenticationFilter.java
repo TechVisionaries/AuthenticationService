@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
@@ -15,6 +16,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 //JwtAuthenticationFilter
 @Component
@@ -59,10 +61,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                         // Validate the JWT token
                         if (jwtUtil.isTokenValid(jwt, email, role)) {
+                            String roleName = role.startsWith("ROLE_") ? role : "ROLE_" + role;
+                            List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(roleName));
                             UsernamePasswordAuthenticationToken authToken =
-                                    new UsernamePasswordAuthenticationToken(email, null, new ArrayList<>());
+                                    new UsernamePasswordAuthenticationToken(email, null, authorities);
                             authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                            // Set authentication in security context
                             SecurityContextHolder.getContext().setAuthentication(authToken);
                         }else {
                             sendUnauthorizedResponse(response, "03", "Not a valid token");

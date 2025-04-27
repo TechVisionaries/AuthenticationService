@@ -16,6 +16,9 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 
 //service implementation
 @Slf4j
@@ -96,5 +99,30 @@ public class UserServiceImpl implements UserService {
             e.printStackTrace();
             return new ApiResponseDTO("06", "Bad Request", null);
         }
+    }
+
+    @Override
+    public UserDTO findByEmail(String email) {
+        User user = userRepository.findByEmail(email).orElse(null);
+        if (user == null) return null;
+        UserDTO userDTO = new UserDTO();
+        userDTO.setEmail(user.getEmail());
+        userDTO.setFirstName(user.getFirstName());
+        userDTO.setLastName(user.getLastName());
+        userDTO.setRole(user.getRole());
+        return userDTO;
+    }
+
+    @Override
+    public List<UserDTO> getAllUsers() {
+        List<User> userList = userRepository.findAll();
+        return userList.stream().map(user -> {
+            UserDTO dto = new UserDTO();
+            dto.setEmail(user.getEmail());
+            dto.setFirstName(user.getFirstName());
+            dto.setLastName(user.getLastName());
+            dto.setRole(user.getRole());
+            return dto;
+        }).collect(Collectors.toList());
     }
 }
