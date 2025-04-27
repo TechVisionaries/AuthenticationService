@@ -32,53 +32,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
-        if(
-                request.getServletPath().equals("/api/v1/users/signup") ||
-                        request.getServletPath().equals("/api/v1/users/login") ||
-                        request.getServletPath().equals("/actuator/health") ||
-                        request.getServletPath().equals("/actuator/info")
-
-        ){
-            chain.doFilter(request,response);
+        if (isPublicEndpoint(request)) {
+            chain.doFilter(request, response);
+            return;
         }
-        else{
-            request.getHeaderNames();
-            final String authHeader = request.getHeader("Authorization");
-            logger.info(authHeader);
-            String email = null;
-            String jwt = null;
-            String role = null;
-
-            // Extract JWT token from Authorization header
-            if (authHeader != null && authHeader.startsWith("Bearer ")) {
-                jwt = authHeader.substring(7);
-                // Extract email from JWT token
-                try{
-                    email = jwtUtil.extractEmail(jwt);
-                    role = jwtUtil.extractRole(jwt);
-                    // Check if email is not null and there is no existing authentication
-                    if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                        // Validate the JWT token
-                        if (jwtUtil.isTokenValid(jwt, email, role)) {
-                            String roleName = role.startsWith("ROLE_") ? role : "ROLE_" + role;
-                            List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(roleName));
-                            UsernamePasswordAuthenticationToken authToken =
-                                    new UsernamePasswordAuthenticationToken(email, null, authorities);
-                            authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                            SecurityContextHolder.getContext().setAuthentication(authToken);
-                        }else {
-                            sendUnauthorizedResponse(response, "03", "Not a valid token");
-                            return;
-                        }
-                    }
-                }catch (Exception e){
-                    sendUnauthorizedResponse(response, "03", "Exception in authorization");
-                    return;
-                }
-            }else {
-                sendUnauthorizedResponse(response, "03", "No header");
-                return;
-            }
+        if (authenticateRequest(request, response)) {
             chain.doFilter(request, response);
         }
     }
@@ -97,4 +55,48 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         ObjectMapper mapper = new ObjectMapper();
         response.getWriter().write(mapper.writeValueAsString(apiResponseDTO));
     }
+
+    private boolean isPublicEndpoint(HttpServletRequest request) {
+        String path = request.getServletPath();
+        return path.equals("/api/v1/users/signup")
+                || path.equals("/api/v1/users/login")
+                || path.equals("/actuator/health")
+                || path.equals("/actuator/info");
+    }
+
+    private boolean authenticateRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        final String authHeader = request.getHeader("Authorization");
+        logger.info(authHeader);
+
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            sendUnauthorizedResponse(response, "03", "No header");
+            return false;
+        }
+
+        String jwt = authHeader.substring(7);
+        try {
+            String email = jwtUtil.extractEmail(jwt);
+            String role = jwtUtil.extractRole(jwt);
+
+            if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                if (jwtUtil.isTokenValid(jwt, email, role)) {
+                    String roleName = role.startsWith("ROLE_") ? role : "ROLE_" + role;
+                    List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(roleName));
+                    UsernamePasswordAuthenticationToken authToken =
+                            new UsernamePasswordAuthenticationToken(email, null, authorities);
+                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                    return true;
+                } else {
+                    sendUnauthorizedResponse(response, "03", "Not a valid token");
+                    return false;
+                }
+            }
+        } catch (Exception e) {
+            sendUnauthorizedResponse(response, "03", "Exception in authorization");
+            return false;
+        }
+        return true;
+    }
+
 }
