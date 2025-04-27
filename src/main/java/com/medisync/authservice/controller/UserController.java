@@ -25,7 +25,6 @@ public class UserController {
 
     @PostMapping("/signup")
     public ResponseEntity<ApiResponseDTO> signup(@RequestBody UserDTO userDTO) {
-        System.out.println(userDTO);
         ApiResponseDTO responseDTO = userService.registerUser(userDTO);
         HttpStatus status = switch (responseDTO.getResponseCode()) {
             case "00" -> HttpStatus.CREATED;
