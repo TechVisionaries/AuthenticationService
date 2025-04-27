@@ -5,7 +5,6 @@ com\medisync\authservice\service\UserService.class
 com\medisync\authservice\dto\LoginDTO$LoginDTOBuilder.class
 com\medisync\authservice\dto\LoginDTO.class
 com\medisync\authservice\AuthserviceApplication.class
-com\medisync\authservice\config\CorsConfig.class
 com\medisync\authservice\repository\UserRepository.class
 com\medisync\authservice\controller\UserController.class
 com\medisync\authservice\dto\TokenContentDTO.class
