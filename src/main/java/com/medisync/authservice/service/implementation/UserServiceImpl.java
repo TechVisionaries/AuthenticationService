@@ -123,6 +123,6 @@ public class UserServiceImpl implements UserService {
             dto.setLastName(user.getLastName());
             dto.setRole(user.getRole());
             return dto;
-        }).collect(Collectors.toList());
+        }).toList();
     }
 }
