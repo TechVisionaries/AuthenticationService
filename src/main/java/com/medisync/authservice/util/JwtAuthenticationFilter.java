@@ -60,7 +60,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     // Check if email is not null and there is no existing authentication
                     if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                         // Validate the JWT token
-                        if (jwtUtil.isTokenValid(jwt, email, role)) {
+                        if (jwtUtil.isTokenValid(jwt, email, role) == true) {
                             String roleName = role.startsWith("ROLE_") ? role : "ROLE_" + role;
                             List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(roleName));
                             UsernamePasswordAuthenticationToken authToken =
