@@ -25,25 +25,8 @@ jobs:
 
       - name: Build the app with Maven
         run: ./mvnw clean package -DskipTests
-
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-         aws-region: us-east-1 # e.g. us-east-1
-
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
-
-      - name: Build and Push Docker Image to ECR
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: latest
+        
+      - name: Build and Push Docker Image
         run: |
-          docker build -t $ECR_REGISTRY/auth-microservice:latest -t $ECR_REGISTRY/auth-microservice:${{ github.sha }} .
-          docker push $ECR_REGISTRY/auth-microservice:latest
-          docker push $ECR_REGISTRY/auth-microservice:${{ github.sha }}
-
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/auth-microservice:latest .
+          docker push ${{ secrets.DOCKER_USERNAME }}/auth-microservice:latest
