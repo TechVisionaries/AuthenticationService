@@ -69,10 +69,6 @@ public class JwtUtil {
                 .getBody();
     }
 
-//    private Boolean isTokenExpired(String token) {
-//        return extractExpiration(token).before(new Date());
-//    }
-
     public Boolean isTokenValid(String token, String email, String role) {
         final String userEmail = extractEmail(token);
         final String userRole = extractRole(token);
