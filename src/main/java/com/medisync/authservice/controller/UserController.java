@@ -77,6 +77,7 @@ public class UserController {
         );
     }
 
+    //only access by ADMIN
     @GetMapping("/all-users")
     //@PreAuthorize("hasRole('ADMIN')") // Optional if handled in SecurityConfig
     public ResponseEntity<ApiResponseDTO> getAllUsers() {
