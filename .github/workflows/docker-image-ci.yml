@@ -1,7 +1,7 @@
 name: Docker Image CI
 
 on:
- workflow_run:
+  workflow_run:
     workflows: ["Spring Boot CI"]
     types:
       - completed
@@ -12,21 +12,32 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v3
 
-      - name: Log in to DockerHub
-        uses: docker/login-action@v3
+      # Configure AWS credentials
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1  # change if your region is different
 
-      - name: Grant execute permission to Maven Wrapper
-        run: chmod +x mvnw
+      # Log in to Amazon ECR
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Build the app with Maven
-        run: ./mvnw clean package -DskipTests
-        
-      - name: Build and Push Docker Image
+      # Build Docker image
+      - name: Build Docker image
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/auth-microservice:latest .
-          docker push ${{ secrets.DOCKER_USERNAME }}/auth-microservice:latest
+          docker build -t authentication-service:latest .
+
+      # Tag Docker image for ECR
+      - name: Tag Docker image
+        run: |
+          docker tag authentication-service:latest 575108922870.dkr.ecr.us-east-1.amazonaws.com/authentication-service
+
+      # Push Docker image to ECR
+      - name: Push Docker image to ECR
+        run: |
+          docker push 575108922870.dkr.ecr.us-east-1.amazonaws.com/authentication-service
