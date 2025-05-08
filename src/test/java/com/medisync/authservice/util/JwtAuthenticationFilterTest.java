@@ -16,6 +16,7 @@ import java.io.StringWriter;
 
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -70,6 +71,8 @@ class JwtAuthenticationFilterTest {
         when(jwtUtil.extractEmail("token")).thenReturn(null);
 
         jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
+        verify(filterChain, times(1)).doFilter(request, response);
+        assertNull(SecurityContextHolder.getContext().getAuthentication());
     }
 
     @Test
@@ -86,7 +89,8 @@ class JwtAuthenticationFilterTest {
             mocked.when(org.springframework.security.core.context.SecurityContextHolder::getContext).thenReturn(context);
 
             jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
-
+            verify(filterChain, times(1)).doFilter(request, response);
+            verify(context, times(1)).getAuthentication();
         }
     }
 
