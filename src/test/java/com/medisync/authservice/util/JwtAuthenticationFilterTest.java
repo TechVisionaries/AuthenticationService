@@ -112,10 +112,10 @@ class JwtAuthenticationFilterTest {
     @Test
     void doFilterInternal_tokenValidNull_shouldSendUnauthorized() throws Exception {
         when(request.getServletPath()).thenReturn("/api/v1/other");
-        when(request.getHeader("Authorization")).thenReturn("Bearer token");
-        when(jwtUtil.extractEmail("token")).thenReturn("user@example.com");
-        when(jwtUtil.extractRole("token")).thenReturn("USER");
-        when(jwtUtil.isTokenValid("token", "user@example.com", "USER")).thenReturn(null);
+        when(request.getHeader("Authorization")).thenReturn("Bearer invalidtoken");
+        when(jwtUtil.extractEmail("invalidtoken")).thenReturn("user@example.com");
+        when(jwtUtil.extractRole("invalidtoken")).thenReturn("USER");
+        when(jwtUtil.isTokenValid("invalidtoken", "user@example.com", "USER")).thenReturn(null);
 
         jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
 
@@ -123,6 +123,7 @@ class JwtAuthenticationFilterTest {
         verify(response, times(1)).setContentType("application/json");
         verify(filterChain, never()).doFilter(request, response);
     }
+
 
 
     @Test
