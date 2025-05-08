@@ -56,7 +56,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         response.getWriter().write(mapper.writeValueAsString(apiResponseDTO));
     }
 
-    private boolean isPublicEndpoint(HttpServletRequest request) {
+    boolean isPublicEndpoint(HttpServletRequest request) {
         String path = request.getServletPath();
         return path.equals("/api/v1/users/signup")
                 || path.equals("/api/v1/users/login")

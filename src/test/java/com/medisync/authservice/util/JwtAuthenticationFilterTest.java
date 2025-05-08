@@ -15,6 +15,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -42,6 +43,68 @@ class JwtAuthenticationFilterTest {
 
         verify(filterChain, times(1)).doFilter(request, response);
     }
+
+    @Test
+    void isPublicEndpoint_withNonPublicPath_shouldReturnFalse() {
+        when(request.getServletPath()).thenReturn("/api/v1/other");
+        boolean result = jwtAuthenticationFilter.isPublicEndpoint(request);
+        assertFalse(result);
+    }
+
+    @Test
+    void doFilterInternal_headerNotBearer_shouldSendUnauthorized() throws Exception {
+        when(request.getServletPath()).thenReturn("/api/v1/other");
+        when(request.getHeader("Authorization")).thenReturn("Token sometoken");
+
+        jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
+
+        verify(response, times(1)).setStatus(HttpServletResponse.SC_FORBIDDEN);
+        verify(response, times(1)).setContentType("application/json");
+        verify(filterChain, never()).doFilter(request, response);
+    }
+
+    @Test
+    void doFilterInternal_emailNull_shouldReturnTrue() throws Exception {
+        when(request.getServletPath()).thenReturn("/api/v1/other");
+        when(request.getHeader("Authorization")).thenReturn("Bearer token");
+        when(jwtUtil.extractEmail("token")).thenReturn(null);
+
+        jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
+    }
+
+    @Test
+    void doFilterInternal_authenticationNotNull_shouldReturnTrue() throws Exception {
+        when(request.getServletPath()).thenReturn("/api/v1/other");
+        when(request.getHeader("Authorization")).thenReturn("Bearer token");
+        when(jwtUtil.extractEmail("token")).thenReturn("user@example.com");
+        when(jwtUtil.extractRole("token")).thenReturn("USER");
+
+        var authentication = mock(org.springframework.security.core.Authentication.class);
+        var context = mock(org.springframework.security.core.context.SecurityContext.class);
+        when(context.getAuthentication()).thenReturn(authentication);
+        try (var mocked = org.mockito.Mockito.mockStatic(org.springframework.security.core.context.SecurityContextHolder.class)) {
+            mocked.when(org.springframework.security.core.context.SecurityContextHolder::getContext).thenReturn(context);
+
+            jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
+
+        }
+    }
+
+    @Test
+    void doFilterInternal_tokenValidNull_shouldSendUnauthorized() throws Exception {
+        when(request.getServletPath()).thenReturn("/api/v1/other");
+        when(request.getHeader("Authorization")).thenReturn("Bearer token");
+        when(jwtUtil.extractEmail("token")).thenReturn("user@example.com");
+        when(jwtUtil.extractRole("token")).thenReturn("USER");
+        when(jwtUtil.isTokenValid("token", "user@example.com", "USER")).thenReturn(null);
+
+        jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
+
+        verify(response, times(1)).setStatus(HttpServletResponse.SC_FORBIDDEN);
+        verify(response, times(1)).setContentType("application/json");
+        verify(filterChain, never()).doFilter(request, response);
+    }
+
 
     @Test
     void doFilterInternal_validToken_shouldAuthenticateAndCallChain() throws Exception {
