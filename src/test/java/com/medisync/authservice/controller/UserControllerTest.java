@@ -65,6 +65,17 @@ class UserControllerTest {
     }
 
     @Test
+    void signup_withUnknownResponseCode_shouldReturnInternalServerError() {
+        ApiResponseDTO responseDTO = new ApiResponseDTO("99", "Unknown Error", null); // "99" is not handled
+        when(userService.registerUser(any(UserDTO.class))).thenReturn(responseDTO);
+
+        ResponseEntity<ApiResponseDTO> response = userController.signup(validUserDTO);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals("99", response.getBody().getResponseCode());
+    }
+
+    @Test
     void login_withCorrectCredentials_shouldReturnCreated() {
         ApiResponseDTO responseDTO = new ApiResponseDTO("00", "Success", null);
         when(userService.authenticateUser(any(LoginDTO.class), any(HttpServletResponse.class))).thenReturn(responseDTO);
@@ -96,6 +107,18 @@ class UserControllerTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("02", response.getBody().getResponseCode());
     }
+
+    @Test
+    void login_withUnknownResponseCode_shouldReturnInternalServerError() {
+        ApiResponseDTO responseDTO = new ApiResponseDTO("99", "Unknown Error", null); // "99" is not handled
+        when(userService.authenticateUser(any(LoginDTO.class), any(HttpServletResponse.class))).thenReturn(responseDTO);
+
+        ResponseEntity<ApiResponseDTO> response = userController.login(validLoginDTO, httpServletResponse);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals("99", response.getBody().getResponseCode());
+    }
+
 
     @Test
     void getCurrentUser_whenAuthenticated_shouldReturnSuccess() {
