@@ -132,6 +132,13 @@
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
 				<version>0.8.12</version>
+				<configuration>
+					<excludes>
+						<exclude>com/medisync/authservice/AuthserviceApplication.class</exclude>
+						<exclude>com/medisync/authservice/dto/**</exclude>
+						<exclude>com/medisync/authservice/entity/**</exclude>
+					</excludes>
+				</configuration>
 				<executions>
 					<execution>
 						<goals>
