@@ -7,6 +7,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 import java.util.Base64;
+import java.util.Date;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class JwtUtilTest {
@@ -85,4 +87,23 @@ class JwtUtilTest {
 
         assertFalse(jwtUtil.isTokenValid(token, email, "ADMIN"));
     }
+
+    @Test
+    void extractExpiration_shouldReturnCorrectExpirationDate() {
+        String email = "test@example.com";
+        String role = "USER";
+        String token = jwtUtil.generateToken(email, role);
+
+        Date expiration = jwtUtil.extractExpiration(token);
+        assertNotNull(expiration);
+
+        // Assert that the expiration date is approximately 2 hours from now
+        long currentTime = System.currentTimeMillis();
+        long expirationTime = expiration.getTime();
+        long twoHoursInMillis = 1000 * 60 * 60 * 2;
+
+        assertTrue(expirationTime > currentTime);
+        assertTrue(expirationTime <= currentTime + twoHoursInMillis);
+    }
+
 }
