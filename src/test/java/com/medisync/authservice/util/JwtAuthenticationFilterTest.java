@@ -53,6 +53,21 @@ class JwtAuthenticationFilterTest {
     }
 
     @Test
+    void doFilterInternal_tokenInvalid_shouldSendUnauthorized() throws Exception {
+        when(request.getServletPath()).thenReturn("/api/v1/other");
+        when(request.getHeader("Authorization")).thenReturn("Bearer invalidtoken");
+        when(jwtUtil.extractEmail("invalidtoken")).thenReturn("user@example.com");
+        when(jwtUtil.extractRole("invalidtoken")).thenReturn("USER");
+        when(jwtUtil.isTokenValid("invalidtoken", "user@example.com", "USER")).thenReturn(false);
+
+        jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
+
+        verify(response, times(1)).setStatus(HttpServletResponse.SC_FORBIDDEN);
+        verify(response, times(1)).setContentType("application/json");
+        verify(filterChain, never()).doFilter(request, response);
+    }
+
+    @Test
     void doFilterInternal_headerNotBearer_shouldSendUnauthorized() throws Exception {
         when(request.getServletPath()).thenReturn("/api/v1/other");
         when(request.getHeader("Authorization")).thenReturn("Token sometoken");
