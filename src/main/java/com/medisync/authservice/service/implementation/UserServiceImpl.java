@@ -58,7 +58,6 @@ public class UserServiceImpl implements UserService {
             return new ApiResponseDTO("00", "Success", null);
         }catch (Exception e) {
             log.error("Exception occur signup: {}", e.getMessage());
-            e.printStackTrace();
             return new ApiResponseDTO("06", "Bad Request", null);
         }
     }
@@ -98,7 +97,6 @@ public class UserServiceImpl implements UserService {
             }
         } catch (Exception e) {
             log.error("Exception occur in logging: {}", e.getMessage());
-            e.printStackTrace();
             return new ApiResponseDTO("06", "Bad Request", null);
         }
     }
