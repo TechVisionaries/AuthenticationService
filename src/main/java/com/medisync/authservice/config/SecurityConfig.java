@@ -33,8 +33,8 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Add CORS configuration
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/v1/users/signup", "/api/v1/users/login", "/actuator/health", "/actuator/info").permitAll()
-                        .requestMatchers("/api/v1/users/all-users").hasRole("ADMIN")
+                        .requestMatchers("/api/authentication/user/signup", "/api/authentication/user/login","/api/authentication", "/actuator/health", "/actuator/info").permitAll()
+                        .requestMatchers("/api/authentication/users/all-users").hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));

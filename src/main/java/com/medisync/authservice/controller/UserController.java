@@ -16,7 +16,7 @@ import java.util.List;
 
 //user Controller
 @RestController
-@RequestMapping("/api/v1/users")
+@RequestMapping("/api/authentication")
 @CrossOrigin("*")
 public class UserController {
 
@@ -27,7 +27,7 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping("/signup")
+    @PostMapping("user/signup")
     public ResponseEntity<ApiResponseDTO> signup(@RequestBody UserDTO userDTO) {
         ApiResponseDTO responseDTO = userService.registerUser(userDTO);
         HttpStatus status = switch (responseDTO.getResponseCode()) {
@@ -39,7 +39,7 @@ public class UserController {
         return new ResponseEntity<>(responseDTO, status);
     }
 
-    @PostMapping("/login")
+    @PostMapping("user/login")
     public ResponseEntity<ApiResponseDTO> login(@RequestBody LoginDTO loginDTO, HttpServletResponse httpServletResponse) {
         ApiResponseDTO responseDTO = userService.authenticateUser(loginDTO, httpServletResponse);
 
@@ -52,7 +52,7 @@ public class UserController {
         return new ResponseEntity<>(responseDTO, status);
     }
 
-    @GetMapping("/me")
+    @GetMapping("user-profile/me")
     public ResponseEntity<ApiResponseDTO> getCurrentUser() {
         // Get the email from the security context
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -81,12 +81,21 @@ public class UserController {
     }
 
     //only access by ADMIN
-    @GetMapping("/all-users")
+    @GetMapping("users/all-users")
     //@PreAuthorize("hasRole('ADMIN')") // Optional if handled in SecurityConfig
     public ResponseEntity<ApiResponseDTO> getAllUsers() {
         List<UserDTO> users = userService.getAllUsers();
         return new ResponseEntity<>(
                 new ApiResponseDTO("00", "Success", users),
+                HttpStatus.OK
+        );
+    }
+
+    @GetMapping("")
+    //@PreAuthorize("hasRole('ADMIN')") // Optional if handled in SecurityConfig
+    public ResponseEntity<ApiResponseDTO> testServer() {
+        return new ResponseEntity<>(
+                new ApiResponseDTO("00", "Success","Server is up and Running"),
                 HttpStatus.OK
         );
     }
