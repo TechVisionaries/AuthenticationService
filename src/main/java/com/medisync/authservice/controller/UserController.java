@@ -21,7 +21,7 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
-    private final static String SuccessMsg = "Success";
+    private static final String SUCCESS_MSG = "Success";
 
     @Autowired
     public UserController(UserService userService) {
@@ -76,7 +76,7 @@ public class UserController {
         }
 
         return new ResponseEntity<>(
-                new ApiResponseDTO("00", SuccessMsg, userDTO),
+                new ApiResponseDTO("00", SUCCESS_MSG, userDTO),
                 HttpStatus.OK
         );
     }
@@ -87,7 +87,7 @@ public class UserController {
     public ResponseEntity<ApiResponseDTO> getAllUsers() {
         List<UserDTO> users = userService.getAllUsers();
         return new ResponseEntity<>(
-                new ApiResponseDTO("00", SuccessMsg, users),
+                new ApiResponseDTO("00", SUCCESS_MSG, users),
                 HttpStatus.OK
         );
     }
@@ -96,7 +96,7 @@ public class UserController {
     //@PreAuthorize("hasRole('ADMIN')") // Optional if handled in SecurityConfig
     public ResponseEntity<ApiResponseDTO> testServer() {
         return new ResponseEntity<>(
-                new ApiResponseDTO("00", SuccessMsg,"Server is up and Running"),
+                new ApiResponseDTO("00", SUCCESS_MSG,"Server is up and Running"),
                 HttpStatus.OK
         );
     }
