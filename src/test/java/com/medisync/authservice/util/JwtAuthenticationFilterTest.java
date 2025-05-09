@@ -38,7 +38,7 @@ class JwtAuthenticationFilterTest {
 
     @Test
     void doFilterInternal_publicEndpoint_shouldCallChainDoFilter() throws Exception {
-        when(request.getServletPath()).thenReturn("/api/v1/users/signup");
+        when(request.getServletPath()).thenReturn("/api/authentication/user/signup");
 
         jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
 
@@ -47,14 +47,14 @@ class JwtAuthenticationFilterTest {
 
     @Test
     void isPublicEndpoint_withNonPublicPath_shouldReturnFalse() {
-        when(request.getServletPath()).thenReturn("/api/v1/other");
+        when(request.getServletPath()).thenReturn("/api/authentication/other");
         boolean result = jwtAuthenticationFilter.isPublicEndpoint(request);
         assertFalse(result);
     }
 
     @Test
     void doFilterInternal_headerNotBearer_shouldSendUnauthorized() throws Exception {
-        when(request.getServletPath()).thenReturn("/api/v1/other");
+        when(request.getServletPath()).thenReturn("/api/authentication/other");
         when(request.getHeader("Authorization")).thenReturn("Token sometoken");
 
         jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
@@ -66,7 +66,7 @@ class JwtAuthenticationFilterTest {
 
     @Test
     void doFilterInternal_emailNull_shouldReturnTrue() throws Exception {
-        when(request.getServletPath()).thenReturn("/api/v1/other");
+        when(request.getServletPath()).thenReturn("/api/authentication/other");
         when(request.getHeader("Authorization")).thenReturn("Bearer token");
         when(jwtUtil.extractEmail("token")).thenReturn(null);
 
@@ -77,7 +77,7 @@ class JwtAuthenticationFilterTest {
 
     @Test
     void doFilterInternal_authenticationNotNull_shouldReturnTrue() throws Exception {
-        when(request.getServletPath()).thenReturn("/api/v1/other");
+        when(request.getServletPath()).thenReturn("/api/authentication/other");
         when(request.getHeader("Authorization")).thenReturn("Bearer token");
         when(jwtUtil.extractEmail("token")).thenReturn("user@example.com");
         when(jwtUtil.extractRole("token")).thenReturn("USER");
@@ -96,7 +96,7 @@ class JwtAuthenticationFilterTest {
 
     @Test
     void doFilterInternal_tokenValidNull_shouldSendUnauthorized() throws Exception {
-        when(request.getServletPath()).thenReturn("/api/v1/other");
+        when(request.getServletPath()).thenReturn("/api/authentication/other");
         when(request.getHeader("Authorization")).thenReturn("Bearer invalidtoken");
         when(jwtUtil.extractEmail("invalidtoken")).thenReturn("user@example.com");
         when(jwtUtil.extractRole("invalidtoken")).thenReturn("USER");
@@ -113,7 +113,7 @@ class JwtAuthenticationFilterTest {
 
     @Test
     void doFilterInternal_validToken_shouldAuthenticateAndCallChain() throws Exception {
-        when(request.getServletPath()).thenReturn("/api/v1/other");
+        when(request.getServletPath()).thenReturn("/api/authentication/other");
         when(request.getHeader("Authorization")).thenReturn("Bearer validtoken");
         when(jwtUtil.extractEmail("validtoken")).thenReturn("user@example.com");
         when(jwtUtil.extractRole("validtoken")).thenReturn("USER");
@@ -127,7 +127,7 @@ class JwtAuthenticationFilterTest {
 
     @Test
     void doFilterInternal_invalidToken_shouldSendUnauthorized() throws Exception {
-        when(request.getServletPath()).thenReturn("/api/v1/other");
+        when(request.getServletPath()).thenReturn("/api/authentication/other");
         when(request.getHeader("Authorization")).thenReturn("Bearer invalidtoken");
         when(jwtUtil.extractEmail("invalidtoken")).thenReturn("user@example.com");
         when(jwtUtil.extractRole("invalidtoken")).thenReturn("USER");
@@ -142,7 +142,7 @@ class JwtAuthenticationFilterTest {
 
     @Test
     void doFilterInternal_missingAuthorizationHeader_shouldSendUnauthorized() throws Exception {
-        when(request.getServletPath()).thenReturn("/api/v1/other");
+        when(request.getServletPath()).thenReturn("/api/authentication/other");
         when(request.getHeader("Authorization")).thenReturn(null);
 
         jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
@@ -154,7 +154,7 @@ class JwtAuthenticationFilterTest {
 
     @Test
     void doFilterInternal_exceptionDuringAuthorization_shouldSendUnauthorized() throws Exception {
-        when(request.getServletPath()).thenReturn("/api/v1/other");
+        when(request.getServletPath()).thenReturn("/api/authentication/other");
         when(request.getHeader("Authorization")).thenReturn("Bearer token");
         when(jwtUtil.extractEmail("token")).thenThrow(new RuntimeException("Error"));
 
