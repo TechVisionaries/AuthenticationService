@@ -34,11 +34,9 @@ on:
 
 env:
   AWS_REGION: us-east-1
-  ECS_SERVICE: authservice-service
-  ECS_CLUSTER: authservice-cluster
+  ECS_SERVICE: authentication-service
+  ECS_CLUSTER: MediSyncCluster
   ECS_TASK_DEFINITION: .aws/task-definition.json
-  CONTAINER_NAME: authservice
-  DOCKERHUB_IMAGE: ${{ secrets.DOCKER_USERNAME }}/auth-microservice
 
 permissions:
   contents: read
@@ -55,28 +53,16 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Set Docker Hub image tag
-        id: vars
-        run: echo "IMAGE=${{ env.DOCKERHUB_IMAGE }}:latest" >> $GITHUB_OUTPUT
-
-      - name: Fill in the new image ID in the Amazon ECS task definition
-        id: task-def
-        uses: aws-actions/amazon-ecs-render-task-definition@v1
-        with:
-          task-definition: ${{ env.ECS_TASK_DEFINITION }}
-          container-name: ${{ env.CONTAINER_NAME }}
-          image: ${{ steps.vars.outputs.IMAGE }}
-
       - name: Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
-          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          task-definition: ${{ env.ECS_TASK_DEFINITION }}
           service: ${{ env.ECS_SERVICE }}
           cluster: ${{ env.ECS_CLUSTER }}
           wait-for-service-stability: true
